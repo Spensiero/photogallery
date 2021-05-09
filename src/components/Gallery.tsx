@@ -6,19 +6,49 @@ import './Gallery.scss';
 interface State {
     dataImages: any;
     arrThumbs: any;
-  }
+    scroll: boolean;
+}
 
 export default class Gallery extends Component<any,State> {
     constructor(props: any){
         super(props);
         this.state = {
             arrThumbs: [],
-            dataImages: [] 
+            dataImages: [],
+            scroll: false 
         };
     }
       
     componentDidMount(){
-        this.getDataImages()
+        document.addEventListener("mousewheel", ()=>{
+            this.getDataImages()
+            this.setScrollActive()
+        })
+        this.getFirstDataImages()
+    }
+
+    componentWillUnmount(){
+        document.addEventListener("mousewheel", ()=>{})
+    }
+
+    getFirstDataImages(){
+        axios.get('https://www.reddit.com/r/Pics/top.json')
+        .then((response) => {
+            this.setState(() => ({
+                dataImages: response.data.data.children
+            }),()=>{
+                this.setGalleryContent()
+            });
+        })
+        .catch((e)=>{
+            console.log(e)
+        })
+    }
+
+    setScrollActive(){
+        this.setState({
+            scroll: true
+        })
     }
 
     getPictureObjOne() {
@@ -42,7 +72,6 @@ export default class Gallery extends Component<any,State> {
     }
 
     getDataImages(){
-       
           const _this = this
           Promise.all([this.getPictureObjOne(), this.getPictureObjTwo(), this.getPictureObjTree(), this.getPictureObjFour(), this.getPictureObjFive()])
             .then(function (results) {
@@ -55,35 +84,22 @@ export default class Gallery extends Component<any,State> {
               _this.setState(() => ({
                 dataImages: arrPicturesObj
               }),()=>{
-                _this.setGalleryContent();
+                _this.setGalleryContent()
               });
             })
             .catch((e)=>{
                 console.log(e)
             })
-
-
-
-       /*  axios.get('https://www.reddit.com/r/Pics/top.json')
-        .then((response) => {
-            this.setState(() => ({
-                dataImages: response.data.data.children
-            }),()=>{
-                this.setGalleryContent();
-            });
-        })
-        .catch((e)=>{
-            console.log(e)
-        }) */
     }
 
     setGalleryContent(){
         let arrPictures = []
+        let key = 0
         for (let item of  this.state.dataImages) {
+            key = key + 1
             const data = JSON.stringify(item.data)
-            debugger
-            if(item.data.thumbnail != null)//todo
-            arrPictures.push(<li><Link to={"/detail?"+ data}><img src={item.data.thumbnail}/></Link></li>) 
+            if(item.data.thumbnail && item.data.thumbnail.search("https") == 0)
+            arrPictures.push(<li key={key}><Link to={"/detail?"+ data}><img src={item.data.thumbnail}/></Link></li>) 
         }
        
         this.setState({
@@ -98,13 +114,11 @@ export default class Gallery extends Component<any,State> {
     
     render() {
         return (
-            <ul>
-                 {this.getThumbs()}
-                    
-               
-                
-                {/*  <Link to={"/detail?"+ data}>Picture</Link> */}
-            </ul>
+            <div style={{height:  this.state.scroll ? '100%' : window.innerHeight, overflowY: this.state.scroll ? 'inherit' : 'hidden'}}>
+                <ul>
+                    {this.getThumbs()}
+                </ul>
+            </div>
         )
     }
 }

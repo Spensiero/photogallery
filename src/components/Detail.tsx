@@ -8,13 +8,16 @@ export default class Detail extends Component<any> {
         
     }
     render() {
-        
         let dataDetail = this.props.location.search
-        dataDetail = JSON.parse(dataDetail.substr(dataDetail.lastIndexOf('?')+1))
-        
+        try{
+            dataDetail = JSON.parse(dataDetail.substr(1, dataDetail.length + 1))
+        }
+        catch(error){
+            console.log(error)
+        }
         return (
             <div>
-               {dataDetail.name}
+               {dataDetail.name ? dataDetail.name : ''}
             </div>
         )
     }

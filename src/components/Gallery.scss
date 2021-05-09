@@ -9,10 +9,10 @@ ul {
   li {
     height: 26vh;
     flex-grow: 1;
-  }
-  
-  li:last-child {
-    flex-grow: 10;
+    &:hover{
+      flex-grow: 31;
+      transition: all 0.5s ease;
+    }
   }
   
   img {
@@ -20,6 +20,15 @@ ul {
     min-width: 100%;
     object-fit: cover;
     vertical-align: bottom;
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+    transition: all 0.5s ease;
+
+    &:hover{
+      transition: all 0.5s ease;
+      -webkit-filter: grayscale(0%);
+      filter: grayscale(0%);
+    }
   }
     
   @media (max-aspect-ratio: 1/1) {

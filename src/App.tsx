@@ -9,7 +9,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Router>
-          <Route path='/' component={Gallery}></Route>
+          <Route exact path='/' component={Gallery}></Route>
           <Route path='/detail' component={Detail}></Route>
         </Router>
       </header>
